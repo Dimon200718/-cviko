@@ -75,7 +75,53 @@ SETOFINT* set_intersection(SETOFINT *a, SETOFINT *b) {
     return result;
 }
 
+SETOFINT* set_difference(SETOFINT *a, SETOFINT *b) {
+    int i = 0, j = 0, k = 0;
+    int *res = malloc(a->size * sizeof(int));
 
+    while (i < a->size && j < b->size) {
+        if (a->element[i] < b->element[j])
+            res[k++] = a->element[i++];
+        else if (a->element[i] > b->element[j])
+            j++;
+        else {
+            i++; j++;
+        }
+    }
+
+    while (i < a->size)
+        res[k++] = a->element[i++];
+
+    SETOFINT *result = malloc(sizeof(SETOFINT));
+    result->size = k;
+    result->element = res;
+    return result;
+}
+
+SETOFINT* set_sym_diff(SETOFINT *a, SETOFINT *b) {
+    int i = 0, j = 0, k = 0;
+    int *res = malloc((a->size + b->size) * sizeof(int));
+
+    while (i < a->size && j < b->size) {
+        if (a->element[i] < b->element[j])
+            res[k++] = a->element[i++];
+        else if (a->element[i] > b->element[j])
+            res[k++] = b->element[j++];
+        else {
+            i++; j++; // пропускаем одинаковые
+        }
+    }
+
+    while (i < a->size)
+        res[k++] = a->element[i++];
+    while (j < b->size)
+        res[k++] = b->element[j++];
+
+    SETOFINT *result = malloc(sizeof(SETOFINT));
+    result->size = k;
+    result->element = res;
+    return result;
+}
 
 
 int cmp(const void *a, const void *b) {
@@ -88,16 +134,29 @@ int main(){
 
     SETOFINT *A = create_set(a_arr, 5);
     SETOFINT *B = create_set(b_arr, 8);
+    SETOFINT *inter = set_intersection(A, B);
+    SETOFINT *diff = set_difference(A, B);
+    SETOFINT *sym = set_sym_diff(A, B);
 
     qsort(A->element, A->size, sizeof(int), cmp);
     qsort(B->element, B->size, sizeof(int), cmp);
 
-    SETOFINT *u = set_union(A, B);
-    print_set(u);
+    SETOFINT *uni = set_union(A, B);
+    print_set(uni);
+
+    print_set(inter);
+
+    print_set(diff);
+
+    print_set(sym);
+
 
     free_set(A);
     free_set(B);
-    free_set(u);
+    free_set(uni);
+    free_set(inter);
+    free_set(diff);
+    free_set(sym);      
 
     return 0;
 }
